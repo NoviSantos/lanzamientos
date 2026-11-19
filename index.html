@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lanzamientos Novi San</title>
+<meta name="theme-color" content="#000080">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lanzamientos">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<style>
+/* Escritorio retro de fines de los 90: fondo verde azulado, ventanas grises con relieve, barra de tareas abajo.
+   Diseño de un solo tema a propósito (el escritorio no cambia con el modo oscuro). */
+:root {
+  --desk: #008080;
+  --face: #c0c0c0;
+  --hi: #ffffff;
+  --lo: #808080;
+  --dk: #0a0a0a;
+  --lt: #dfdfdf;
+  --ink: #000000;
+  --field: #ffffff;
+  --navy: #000080;
+  --title2: #1084d0;
+  --sel: #000080;
+  --sel-ink: #ffffff;
+  --muted: #404040;
+  --bad: #c00000; --bad-bg: #ffe0e0;
+  --warn: #6b5400; --warn-bg: #ffffc8;
+  --ok: #006b00; --ok-bg: #dcf5dc;
+  --prog: #000080;
+  --ui: Tahoma, Verdana, "Segoe UI", Geneva, sans-serif;
+  --big: "Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --lcd: "VT323", "Courier New", monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html { background: #3a7fe0 }
+body { background: transparent; color: var(--ink); font-family: var(--ui); font-size: 15px; line-height: 1.4; min-height: 100vh }
+.desk { max-width: 860px; margin: 0 auto; padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(76px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 18px }
+button, input, select, textarea { font: inherit; color: inherit }
+:focus-visible { outline: 1px dotted var(--ink); outline-offset: -4px }
+svg.px { image-rendering: pixelated; flex: none; display: block }
+
+/* Relieves */
+.raised { background: var(--face); box-shadow: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--lo), inset 2px 2px var(--lt) }
+.sunken { background: var(--field); box-shadow: inset 1px 1px var(--lo), inset -1px -1px var(--hi), inset 2px 2px var(--dk), inset -2px -2px var(--lt) }
+
+/* Ventana */
+.win { background: var(--face); padding: 3px; box-shadow: inset -1px -1px var(--dk), inset 1px 1px var(--lt), inset -2px -2px var(--lo), inset 2px 2px var(--hi), 3px 3px 0 rgba(0,0,0,.25) }
+.title { display: flex; align-items: center; gap: 6px; padding: 3px 3px 3px 5px; background: linear-gradient(90deg, var(--navy), var(--title2)); color: #fff; font-weight: 700; font-size: 14px; min-height: 26px }
+.title .tt { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.tbtns { display: flex; gap: 2px }
+.tb { width: 22px; height: 20px; display: grid; place-items: center; font: 700 13px/1 var(--ui); color: var(--ink); border: 0; padding: 0; background: var(--face); box-shadow: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--lo), inset 2px 2px var(--lt) }
+button.tb { cursor: pointer }
+button.tb:active { box-shadow: inset 1px 1px var(--dk), inset -1px -1px var(--hi), inset 2px 2px var(--lo) }
+.tb.off { color: var(--lo) }
+.wbody { padding: 12px 10px 10px; display: flex; flex-direction: column; gap: 12px }
+.menubar { display: flex; gap: 14px; padding: 3px 8px; font-size: 14px }
+.menubar span:first-letter { text-decoration: underline }
+
+/* Barra de herramientas y dirección */
+.toolbar { display: flex; gap: 8px; align-items: center; padding: 6px 6px 4px; border-bottom: 1px solid var(--lo); box-shadow: 0 1px 0 var(--hi); flex-wrap: wrap }
+.addr { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 200px }
+.addr .lbl { font-size: 13px; color: var(--muted) }
+.addr-f { flex: 1; min-width: 0; padding: 5px 8px; font-size: 14px; display: flex; flex-wrap: wrap; gap: 0; align-items: center }
+.addr-f button { all: unset; cursor: pointer; color: var(--navy); text-decoration: underline }
+.addr-f button:focus-visible { outline: 1px dotted var(--ink) }
+.addr-f .sep { color: var(--muted); padding: 0 2px }
+
+/* Botones */
+.b98 { border: 0; background: var(--face); padding: 6px 14px; min-height: 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 14px;
+  box-shadow: inset -1px -1px var(--dk), inset 1px 1px var(--hi), inset -2px -2px var(--lo), inset 2px 2px var(--lt) }
+.b98:active, .b98[aria-pressed="true"] { box-shadow: inset 1px 1px var(--dk), inset -1px -1px var(--hi), inset 2px 2px var(--lo), inset -2px -2px var(--lt); padding: 7px 13px 5px 15px }
+.b98:disabled { color: var(--lo); text-shadow: 1px 1px var(--hi); cursor: default }
+.b98.default { outline: 1px solid var(--ink); outline-offset: -1px }
+.b98.back { font-weight: 700 }
+
+/* Textos grandes */
+.big { font-family: var(--big); font-weight: 900; font-size: clamp(28px, 8vw, 46px); line-height: 1.02; letter-spacing: -0.02em; margin: 0; overflow-wrap: anywhere }
+.h2 { font-family: var(--big); font-weight: 900; font-size: 22px; margin: 0 }
+.sub { color: var(--muted); font-size: 14px }
+.hint { color: var(--muted); font-size: 13px }
+.head { display: flex; gap: 14px; align-items: center }
+.head > div { min-width: 0 }
+
+/* Barra de progreso por bloques */
+.pbar { height: 22px; padding: 3px; display: flex }
+.pbar i { display: block; height: 100%; background: repeating-linear-gradient(90deg, var(--prog) 0 9px, transparent 9px 11px) }
+.pline { display: flex; gap: 10px; align-items: center }
+.pline .pbar { flex: 1 }
+.pline b { font-family: var(--lcd); font-size: 22px; font-weight: 400; min-width: 52px; text-align: right }
+
+/* Próximo lanzamiento */
+.count { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end }
+.lcd { background: #0b2b0b; color: #7dff7d; font-family: var(--lcd); font-size: 64px; line-height: .9; padding: 8px 14px 4px; text-align: right; min-width: 120px; box-shadow: inset 1px 1px var(--lo), inset -1px -1px var(--hi), inset 2px 2px var(--dk) }
+.lcd small { display: block; font-size: 20px; color: #4fbf4f }
+
+/* Listas */
+.list { padding: 2px }
+.row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 10px; border-bottom: 1px dotted var(--lo) }
+.task:last-child .row, .task:last-child { border-bottom: 0 }
+.row .main { min-width: 0; cursor: pointer }
+.row .t { font-weight: 700; font-size: 15px; overflow-wrap: anywhere }
+.row .s { font-size: 13px; color: var(--muted); overflow-wrap: anywhere }
+.tag { font-size: 12px; color: var(--navy); font-weight: 700 }
+.task.done .t { text-decoration: line-through; color: var(--lo) }
+.due { color: var(--ink); font-size: 12px; font-weight: 700; padding: 3px 7px; white-space: nowrap; border: 1px solid var(--lo); background: var(--field) }
+.due.bad { color: var(--bad); background: var(--bad-bg); border-color: var(--bad) }
+.due.warn { color: var(--warn); background: var(--warn-bg); border-color: #a08a30 }
+.due.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok) }
+.st { min-width: 96px; justify-content: center; font-size: 13px; font-weight: 700; padding: 5px 8px }
+.st[data-e="En proceso"] { color: var(--navy) }
+.st[data-e="Listo"] { color: var(--ok) }
+.st[data-e="Bloqueado"] { color: var(--bad) }
+.empty { padding: 14px 10px; color: var(--muted) }
+
+/* Íconos grandes (vista explorador) */
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; padding: 10px 6px }
+.ic { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px; text-align: center; min-width: 0 }
+.ic .lb { font-size: 13px; line-height: 1.25; padding: 1px 3px; overflow-wrap: anywhere; max-width: 100% }
+.ic:hover .lb, .ic:focus-visible .lb { background: var(--sel); color: var(--sel-ink) }
+.ic:focus-visible { outline: 1px dotted var(--ink) }
+.ic .pc { font-family: var(--lcd); font-size: 18px; line-height: 1 }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 5px; border: 1px solid currentColor }
+.badge.Publicada { color: var(--ok); background: var(--ok-bg) }
+.badge.Subida { color: var(--navy); background: #e4e8ff }
+
+/* Filas de puntos clave (vista detalles) */
+.prow { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 12px 10px; border-bottom: 1px dotted var(--lo) }
+.prow:last-child { border-bottom: 0 }
+.prow:hover, .prow:focus-visible { background: var(--sel); color: var(--sel-ink) }
+.prow:hover .sub, .prow:focus-visible .sub { color: #dde }
+.prow .nm { font-family: var(--big); font-weight: 900; font-size: 20px; line-height: 1.1 }
+.prow .mini { height: 12px; padding: 2px; margin-top: 5px; max-width: 220px; display: flex }
+.prow .mini i { display: block; height: 100%; background: repeating-linear-gradient(90deg, var(--prog) 0 5px, transparent 5px 7px) }
+.prow .go { font-weight: 700 }
+.prow.full .nm::after { content: " ✓"; color: var(--ok) }
+.prow:hover.full .nm::after { color: #9f9 }
+
+/* Formularios */
+fieldset { border: 0; margin: 0; padding: 14px 10px 10px; position: relative; box-shadow: inset 1px 1px var(--lo), inset -1px -1px var(--hi), inset 2px 2px var(--hi), inset -2px -2px var(--lo); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px }
+legend { position: absolute; top: -9px; left: 8px; background: var(--face); padding: 0 4px; font-size: 13px }
+fieldset label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; min-width: 0 }
+fieldset .full { grid-column: 1 / -1 }
+fieldset .check { flex-direction: row; align-items: center; gap: 6px }
+input, select, textarea { border: 0; padding: 6px 7px; width: 100%; min-width: 0; background: var(--field); box-shadow: inset 1px 1px var(--lo), inset -1px -1px var(--hi), inset 2px 2px var(--dk), inset -2px -2px var(--lt); border-radius: 0 }
+input[type="checkbox"] { width: 16px; height: 16px; padding: 0 }
+textarea { min-height: 56px; resize: vertical }
+.actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; align-items: center }
+.edit { padding: 6px 10px 12px; background: var(--face) }
+.edit fieldset { background: var(--face) }
+.link { color: var(--navy); font-size: 14px }
+
+/* Barra de tareas y menú Inicio */
+.taskbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--face); box-shadow: inset 0 1px var(--lt), inset 0 2px var(--hi);
+  display: flex; gap: 6px; align-items: center; padding: 4px max(6px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px)); height: calc(42px + env(safe-area-inset-bottom, 0px)) }
+.start { font-weight: 700; padding: 4px 10px 4px 6px; min-height: 32px }
+.ttab { flex: 1; min-width: 0; display: flex; gap: 6px; align-items: center; padding: 4px 8px; min-height: 32px; font-size: 13px; font-weight: 700;
+  box-shadow: inset 1px 1px var(--dk), inset -1px -1px var(--hi), inset 2px 2px var(--lo), inset -2px -2px var(--lt); background: repeating-conic-gradient(var(--face) 0 25%, var(--hi) 0 50%) 0 0 / 2px 2px }
+.ttab span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.tray { padding: 4px 10px; min-height: 32px; display: flex; align-items: center; font-size: 13px; white-space: nowrap; box-shadow: inset 1px 1px var(--lo), inset -1px -1px var(--hi) }
+.smenu { position: fixed; z-index: 31; left: max(6px, env(safe-area-inset-left, 0px)); bottom: calc(44px + env(safe-area-inset-bottom, 0px)); display: flex; padding: 3px; width: min(300px, calc(100vw - 12px));
+  background: var(--face); box-shadow: inset -1px -1px var(--dk), inset 1px 1px var(--lt), inset -2px -2px var(--lo), inset 2px 2px var(--hi), 3px 3px 0 rgba(0,0,0,.3) }
+.sbanner { width: 30px; background: linear-gradient(0deg, var(--navy), var(--title2)); color: #fff; writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--big); font-size: 20px; padding: 10px 2px; letter-spacing: .02em }
+.sbanner span { opacity: .7; font-family: var(--ui); font-weight: 400 }
+.sitems { flex: 1; display: flex; flex-direction: column; min-width: 0 }
+.sitem { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 8px 10px; font-size: 15px }
+.sitem:hover, .sitem:focus-visible { background: var(--sel); color: var(--sel-ink) }
+.sitem span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.ssep { height: 2px; margin: 3px 4px; box-shadow: inset 0 1px var(--lo), inset 0 -1px var(--hi) }
+.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(54px + env(safe-area-inset-bottom, 0px)); background: var(--warn-bg); color: var(--ink); border: 1px solid var(--ink); padding: 6px 12px; font-size: 14px }
+.setup { position: fixed; inset: 0; z-index: 50; padding: 16px; overflow: auto; background: linear-gradient(180deg, #0b4fc9, #7db8f5) }
+.status { color: #fff; font-size: 13px; text-shadow: 1px 1px 0 #0a3d8a }
+.wall { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: linear-gradient(180deg, #0b4fc9 0%, #2f7fe8 38%, #7db8f5 62%, #bfe0ff 72%) }
+.wall svg { position: absolute; inset: 0; width: 100%; height: 100% }
+
+@media (max-width: 560px) {
+  .row { grid-template-columns: auto 1fr }
+  .row .due { grid-column: 2; justify-self: start }
+  .prow { grid-template-columns: auto 1fr auto }
+  .prow .go { display: none }
+  fieldset { grid-template-columns: 1fr }
+  .lcd { font-size: 52px; min-width: 96px }
+  .tray .date { display: none }
+}
+</style>
+
+<div class="wall" aria-hidden="true"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7bd23a"/><stop offset=".45" stop-color="#4fae1f"/><stop offset="1" stop-color="#2f8417"/></linearGradient>
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5bbd2a"/><stop offset="1" stop-color="#2b7413"/></linearGradient>
+    <radialGradient id="shine" cx=".38" cy=".55" r=".5"><stop offset="0" stop-color="#b6f05a" stop-opacity=".55"/><stop offset="1" stop-color="#b6f05a" stop-opacity="0"/></radialGradient>
+  </defs>
+  <g fill="#fff" filter="url(#soft)" opacity=".95">
+    <ellipse cx="40" cy="30" rx="44" ry="13"/><ellipse cx="70" cy="22" rx="24" ry="10"/>
+    <path d="M150 20 Q230 30 300 95 Q240 60 160 35 Z" opacity=".7"/>
+    <ellipse cx="350" cy="25" rx="55" ry="16"/><ellipse cx="380" cy="45" rx="30" ry="12"/>
+    <ellipse cx="80" cy="95" rx="22" ry="6"/><ellipse cx="112" cy="92" rx="16" ry="7"/>
+    <ellipse cx="45" cy="135" rx="38" ry="8" opacity=".8"/>
+    <ellipse cx="240" cy="145" rx="36" ry="13"/><ellipse cx="275" cy="150" rx="22" ry="10"/>
+    <ellipse cx="335" cy="140" rx="42" ry="16"/><ellipse cx="380" cy="130" rx="26" ry="12"/>
+    <ellipse cx="160" cy="185" rx="70" ry="5" opacity=".85"/><ellipse cx="330" cy="190" rx="80" ry="8"/>
+  </g>
+  <path d="M0 200 Q120 186 230 196 Q330 206 400 222 L400 300 L0 300 Z" fill="url(#hill)"/>
+  <path d="M0 200 Q120 186 230 196 Q330 206 400 222 L400 300 L0 300 Z" fill="url(#shine)"/>
+  <path d="M0 252 Q200 244 400 248 L400 300 L0 300 Z" fill="url(#hill2)"/>
+</svg></div>
+<div class="desk">
+  <div class="status" id="status">Cargando tus lanzamientos…</div>
+  <main id="app" style="display:flex;flex-direction:column;gap:18px"></main>
+</div>
+<div class="smenu" id="smenu" hidden role="menu" aria-label="Menú Inicio"></div>
+<nav class="taskbar" aria-label="Barra de tareas">
+  <button class="b98 start" id="startbtn" data-act="start" aria-haspopup="menu" aria-expanded="false"><span id="starticon"></span>Inicio</button>
+  <div class="ttab" id="ttab"></div>
+  <div class="tray" id="tray"></div>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- Conexión con el Google Sheet (versión independiente) ---------- */
+window.NS_STANDALONE = true;
+(function () {
+  const LS = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } };
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("api") && qs.get("k")) { LS("ns_api", qs.get("api")); LS("ns_k", qs.get("k")); }
+  const COLS = ["lanzamientos", "canciones", "tareas"];
+  let resolveDb; const dbReady = new Promise(r => resolveDb = r);
+
+  function makeDb(api, key) {
+    const state = {}, subs = {}; let loaded = false;
+    COLS.forEach(c => { state[c] = new Map(); subs[c] = []; });
+    let queue = []; try { queue = JSON.parse(LS("ns_queue") || "[]"); } catch (e) {}
+    try { const cache = JSON.parse(LS("ns_cache") || "null"); if (cache) COLS.forEach(c => (cache[c] || []).forEach(d => { const { id, ...x } = d; state[c].set(id, x); })); } catch (e) {}
+    const snap = (c, fromCache) => ({ docs: [...state[c].entries()].map(([id, d]) => ({ id, data: () => d })), metadata: { fromCache } });
+    const emit = (c) => subs[c].forEach(f => f(snap(c, false)));
+    const saveCache = () => { const o = {}; COLS.forEach(c => o[c] = [...state[c].entries()].map(([id, d]) => ({ id, ...d }))); LS("ns_cache", JSON.stringify(o)); };
+    const status = (t) => { const el = document.getElementById("status"); if (el) el.textContent = t; };
+    function applyLocal(o) {
+      const m = state[o.col];
+      if (o.op === "delete") m.delete(o.id);
+      else if (o.op === "update") m.set(o.id, { ...(m.get(o.id) || {}), ...o.data });
+      else m.set(o.id, { ...o.data });
+    }
+    let timer = null, sending = false;
+    function enqueue(o) {
+      applyLocal(o); queue.push(o); LS("ns_queue", JSON.stringify(queue)); saveCache(); emit(o.col);
+      clearTimeout(timer); timer = setTimeout(flush, 400);
+    }
+    async function flush() {
+      if (sending || !queue.length) return;
+      sending = true; const batch = queue.slice(0, 200);
+      try {
+        const r = await fetch(api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ k: key, ops: batch }) });
+        const j = await r.json(); if (!j.ok) throw new Error(j.error || "error");
+        queue = queue.slice(batch.length); LS("ns_queue", JSON.stringify(queue)); status("");
+      } catch (e) { status("Sin conexión: los cambios se guardan en cuanto vuelva internet."); setTimeout(flush, 15000); }
+      finally { sending = false; if (queue.length) setTimeout(flush, 100); }
+    }
+    async function pull() {
+      if (queue.length || sending) return;
+      try {
+        const r = await fetch(api + (api.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(key));
+        const j = await r.json();
+        if (!j.ok) { status(j.error === "clave" ? "La clave no coincide con la del script." : "No se pudieron cargar los datos."); return; }
+        if (queue.length || sending) return;
+        COLS.forEach(c => { state[c] = new Map((j.data[c] || []).map(d => { const { id, ...x } = d; return [id, x]; })); });
+        loaded = true; saveCache(); COLS.forEach(emit);
+      } catch (e) { status("Sin conexión: mostrando lo último guardado en este teléfono."); COLS.forEach(c => subs[c].forEach(f => f(snap(c, false)))); }
+    }
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) { flush(); pull(); } });
+    setInterval(() => { if (!document.hidden) pull(); }, 60000);
+    const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const docRef = (path) => {
+      const [col, id] = path.split("/");
+      return {
+        update: async (data) => enqueue({ op: "update", col, id, data }),
+        set: async (data) => enqueue({ op: "set", col, id, data }),
+        delete: async () => enqueue({ op: "delete", col, id }),
+      };
+    };
+    const api_ = {
+      doc: docRef,
+      collection: (col) => ({
+        onSnapshot(fn) { subs[col].push(fn); if (state[col].size) fn(snap(col, true)); return () => { subs[col] = subs[col].filter(f => f !== fn); }; },
+        add: async (data) => { const id = newId(); enqueue({ op: "set", col, id, data }); return { id }; },
+        doc: (id) => docRef(col + "/" + id),
+      }),
+    };
+    setTimeout(() => { flush(); pull(); }, 0);
+    return api_;
+  }
+
+  function setupScreen() {
+    const ov = document.createElement("div");
+    ov.className = "setup";
+    ov.innerHTML = `<section class="win" style="max-width:520px;margin:12vh auto 0">
+      <div class="title"><span class="tt">Conectar con tu Google Sheet</span></div>
+      <div class="wbody"><form id="setupform"><fieldset><legend>Primera vez en este teléfono</legend>
+        <label class="full">Enlace del script (termina en /exec)<input id="su-api" required placeholder="https://script.google.com/macros/s/…/exec"></label>
+        <label class="full">Clave<input id="su-k" required></label>
+        <p class="hint full" style="margin:0">Se guarda solo en este dispositivo. Si abriste el link completo que te mandé, esto no aparece.</p>
+        <div class="actions"><button class="b98 default" type="submit">Conectar</button></div>
+      </fieldset></form></div></section>`;
+    document.body.appendChild(ov);
+    ov.querySelector("form").addEventListener("submit", (ev) => {
+      ev.preventDefault(); ev.stopPropagation();
+      LS("ns_api", ov.querySelector("#su-api").value.trim()); LS("ns_k", ov.querySelector("#su-k").value.trim());
+      ov.remove(); resolveDb(makeDb(LS("ns_api"), LS("ns_k")));
+    }, true);
+  }
+
+  const api = LS("ns_api"), key = LS("ns_k");
+  if (api && key) resolveDb(makeDb(api, key));
+  else document.addEventListener("DOMContentLoaded", setupScreen);
+  window.claude = { use: async (n) => n === "db" ? dbReady : null };
+})();
+
+</script>
+<script>
+/* ---------- Íconos pixelados propios (12x12) ---------- */
+const PX = { k: "#000", w: "#fff", g: "#c0c0c0", d: "#808080", y: "#ffd84a", b: "#1060c0", n: "#000080", r: "#d02020", G: "#20a040", p: "#7a3fb0", c: "#40c0e0", m: "#e050a0", o: "#f08020", l: "#b8e0ff" };
+const ICONS = {
+  cd: ["....kkkk....", "..kkccwwkk..", ".kcccwwwwmk.", ".kccwwwwmmk.", "kcccwkkwmmmk", "kccwk..kwmmk", "kccwk..kwmmk", "kcccwkkwmmmk", ".kyyywwwmmk.", ".kyyyywwwmk.", "..kkyyyykk..", "....kkkk...."],
+  folder: ["............", ".kkkkk......", "kyyyyyk.....", "kyyyyyykkkk.", "kwwwwwwwwwwk", "kyyyyyyyyyyk", "kyyyyyyyyyyk", "kyyyyyyyyyyk", "kyyyyyyyyyyk", "kyyyyyyyyyyk", "kddddddddddk", ".kkkkkkkkkk."],
+  faders: ["kkkkkkkkkkkk", "kggggggggggk", "kgkggkgggkgk", "kgkggkggwwwk", "kwwwgkggdddk", "kdddgkgggkgk", "kgkgwwwggkgk", "kgkgdddggkgk", "kgkggkgggkgk", "kggggggggggk", "kddddddddddk", "kkkkkkkkkkkk"],
+  notepad: ["..k.k.k.k...", ".kwkwkwkwk..", ".kwwwwwwwwk.", ".kwbbbbbwwk.", ".kwwwwwwwwk.", ".kwbbbbbbwk.", ".kwwwwwwwwk.", ".kwbbbbwwwk.", ".kwwwwwwwwk.", ".kwbbbbbbwk.", ".kwwwwwwwwk.", ".kkkkkkkkkk."],
+  picture: ["kkkkkkkkkkkk", "kccccccyycck","kccccccyycck", "kcccccccccck", "kcccGcccccck", "kccGGGccdcck", "kcGGGGGdddck", "kGGGGGGGdddk", "kGGGGGGGGGGk", "kGGGGGGGGGGk", "kddddddddddk", "kkkkkkkkkkkk"],
+  clapper: ["kkkkkkkkkkkk", "kwkkwwkkwwkk", "kkkkkkkkkkkk", "kddddddddddk", "kdwwwwwwwwdk", "kdwwwrwwwwdk", "kdwwwrrwwwdk", "kdwwwrrrwwdk", "kdwwwrrwwwdk", "kdwwwrwwwwdk", "kddddddddddk", "kkkkkkkkkkkk"],
+  upload: [".....kk.....", "....kGGk....", "...kGGGGk...", "..kGGGGGGk..", ".kkkkGGkkkk.", "....kGGk....", "....kGGk....", "....kGGk....", "kkkkkkkkkkkk", "kggggggggggk", "kgGgdgggggdk", "kkkkkkkkkkkk"],
+  mega: ["..........k.", "........kkk.", "......kkwwk.", "....kkwwwwk.", "kkkkwwwwwwk.", "krrkwwwwwwk.", "krrkwwwwwwk.", "kkkkwwwwwwk.", "..kkkkwwwwk.", "..kd.kkkwwk.", "..kd...kkkk.", "..kk......k."],
+  calendar: ["kkkkkkkkkkkk", "krrrrrrrrrrk", "krrwkrrkwrrk", "kkkkkkkkkkkk", "kwwwwwwwwwwk", "kwdwdwdwdwwk", "kwwwwwwwwwwk", "kwdwrrrwdwwk", "kwwwrwrwwwwk", "kwdwrrrwdwwk", "kwwwwwwwwwwk", "kkkkkkkkkkkk"],
+  note: ["....kkkkkk..", "....kmmmmk..", "....kmkkkk..", "....kmk.....", "....kmk.....", "....kmk.....", "..kkkmk.....", ".kGGGmk.....", "kGGGGGk.....", "kGGGGGk.....", ".kGGGk......", "..kkk......."],
+  plus: ["............", "....kkkk....", "....kGGk....", "....kGGk....", ".kkkkGGkkkk.", ".kGGGGGGGGk.", ".kGGGGGGGGk.", ".kkkkGGkkkk.", "....kGGk....", "....kGGk....", "....kkkk....", "............"],
+  disc: ["kkkkkkkkkkkk", "knnnnnnnnnnk", "knnnkkkknnnk", "knnkccmmknnk", "knkcccwmmknk", "knkccwkwmknk", "knkcywkwmknk", "knkyyywmmknk", "knnkyyyyknnk", "knnnkkkknnnk", "knnnnnnnnnnk", "kkkkkkkkkkkk"],
+};
+function ico(name, size = 32, over = {}) {
+  const map = ICONS[name] || ICONS.folder; let r = "";
+  map.forEach((row, y) => {
+    let x = 0;
+    while (x < 12) {
+      const ch = row[x] || "."; if (ch === ".") { x++; continue; }
+      let w = 1; while (x + w < 12 && row[x + w] === ch) w++;
+      r += `<rect x="${x}" y="${y}" width="${w}" height="1" fill="${over[ch] || PX[ch] || "#000"}"/>`; x += w;
+    }
+  });
+  return `<svg class="px" viewBox="0 0 12 12" width="${size}" height="${size}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+const POINT_ICON = { Mezcla: ["faders"], Master: ["cd", { c: "#b8a0e8", m: "#7a3fb0", y: "#e0d4f8" }], Letra: ["notepad"], Portada: ["picture"], Video: ["clapper"], Subida: ["upload"], "Promoción": ["mega"], Concepto: ["notepad"], Fecha: ["calendar"], Otro: ["folder"] };
+const pIco = (a, size) => { const [n, o] = POINT_ICON[a] || ["folder"]; return ico(n, size, o || {}); };
+
+/* ---------- Datos ---------- */
+const ESTADOS = ["Pendiente", "En proceso", "Listo", "Bloqueado"];
+const ESTADOS_CANCION = ["En proceso", "Subida", "Publicada"];
+const PUNTOS = ["Mezcla", "Master", "Letra", "Portada", "Video", "Subida", "Promoción"];
+const AREAS = ["Fecha", "Concepto", ...PUNTOS, "Otro"];
+function plantillaCancion({ mezcla, single }) {
+  const audio = mezcla ? [
+    ["Mezcla", "Enviar stems a mezcla", "Novi", 49], ["Mezcla", "Recibir primera mezcla", "Por definir", 42],
+    ["Mezcla", "Correcciones de mezcla", "Por definir", 38], ["Mezcla", "Mezcla aprobada", "Novi", 35],
+    ["Master", "Enviar a master", "Novi", 34], ["Master", "Master aprobado", "Novi", 28],
+    ["Master", "Exportar WAV final e instrumental", "Por definir", 27],
+  ] : [
+    ["Mezcla", "Enviar sesión o stems al Crismol", "Novi", 49], ["Mezcla", "Recibir ajustada del Crismol", "Crismol", 42],
+    ["Mezcla", "Revisar y pedir correcciones", "Novi", 38], ["Mezcla", "Ajustada aprobada", "Novi", 35],
+    ["Master", "Master final aprobado", "Crismol", 33], ["Master", "Exportar WAV final e instrumental", "Crismol", 32],
+  ];
+  const distrib = single ? [
+    ["Subida", "Metadatos listos (ISRC, género, explícito)", "Novi", 23], ["Subida", "Subida a la distribuidora", "Novi", 21],
+    ["Subida", "Pitch editorial en Spotify for Artists", "Novi", 20], ["Subida", "Aprobada por la distribuidora", "Novi", 14],
+  ] : [
+    ["Subida", "Metadatos listos (ISRC, género, explícito)", "Novi", 30], ["Subida", "Incluida en la subida del disco", "Novi", 28],
+  ];
+  return [
+    ...audio,
+    ["Letra", "Título final confirmado", "Novi", 40], ["Letra", "Letra transcrita y revisada", "Novi", 35],
+    ["Letra", "Créditos: composición, producción y featurings", "Novi", 35],
+    ["Portada", "Idea y referencias", "Novi", 42], ["Portada", "Definir quién la hace", "Novi", 42],
+    ["Portada", "Sesión de fotos o boceto", "Por definir", 35], ["Portada", "Portada final 3000x3000 px", "Por definir", 28],
+    ["Video", "Idea del video", "Novi", 42], ["Video", "Definir quién graba", "Novi", 42],
+    ["Video", "Preproducción: locación, vestuario y fecha", "Novi", 30], ["Video", "Grabación", "Por definir", 21],
+    ["Video", "Edición", "Por definir", 10], ["Video", "Video final entregado", "Por definir", 5],
+    ...distrib,
+    ["Promoción", "Teaser o snippet para redes", "Novi", 10], ["Promoción", "Canvas de Spotify", "Por definir", 7],
+    ["Promoción", "3 clips verticales para reels y TikTok", "Novi", 3],
+  ];
+}
+const PLANTILLA_DISCO = () => [
+  ["Concepto", "Nombre del disco", "Novi", 70], ["Concepto", "Tracklist cerrado (temas y orden)", "Novi", 63],
+  ["Portada", "Idea de la portada del disco", "Novi", 63], ["Portada", "Definir quién hace la portada del disco", "Novi", 63],
+  ["Portada", "Portada final del disco (3000x3000 px)", "Por definir", 35],
+  ["Subida", "Subir el disco a la distribuidora", "Novi", 28], ["Subida", "Pitch editorial del tema foco", "Novi", 27],
+];
+
+let db = null, canWrite = true;
+let rels = [], tasks = [], songs = [];
+let view = { p: "home" }, openTask = null, editingRel = false, confirmDel = null, menuOpen = false;
+let gotRels = false, gotTasks = false, gotSongs = false;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const nav = (v) => esc(JSON.stringify(v));
+const DIA = 86400000;
+function parseD(s) { const [y, m, d] = String(s).split("-").map(Number); return new Date(y, (m || 1) - 1, d || 1); }
+function today() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function daysTo(d) { return Math.round((d - today()) / DIA); }
+const fmt = new Intl.DateTimeFormat("es-CL", { weekday: "short", day: "numeric", month: "short" });
+const fmtLong = new Intl.DateTimeFormat("es-CL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const relById = (id) => rels.find(r => r.id === id);
+const songById = (id) => songs.find(s => s.id === id);
+const relOf = (t) => relById(t.lanzamiento);
+function dueOf(t) { const r = relOf(t); if (!r) return null; return new Date(parseD(r.fecha).getTime() - (Number(t.diasAntes) || 0) * DIA); }
+function isLate(t) { const d = dueOf(t); return t.estado !== "Listo" && d && daysTo(d) < 0; }
+function slug(s) { return (s || "x").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "x"; }
+const sortedSongs = () => [...songs].sort((a, b) => (a.orden ?? 99) - (b.orden ?? 99));
+const songTasks = (id) => tasks.filter(t => t.cancion === id);
+const relOwnTasks = (id) => tasks.filter(t => t.lanzamiento === id && !t.cancion);
+const pctOf = (ts) => ts.length ? Math.round(ts.filter(t => t.estado === "Listo").length / ts.length * 100) : 0;
+const byDays = (x, y) => (y.diasAntes - x.diasAntes);
+const songsOfRel = (r) => sortedSongs().filter(s => r.tipo === "disco" || s.lanzamiento === r.id);
+const relTasksAll = (r) => r.tipo === "disco" ? [...relOwnTasks(r.id), ...songsOfRel(r).flatMap(s => songTasks(s.id))] : tasks.filter(t => t.lanzamiento === r.id);
+
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); }
+function dueLabel(t) {
+  const d = dueOf(t); if (!d) return { txt: "sin fecha", cls: "" };
+  if (t.estado === "Listo") return { txt: "listo", cls: "ok" };
+  const n = daysTo(d);
+  if (n < 0) return { txt: `atrasada ${-n} d`, cls: "bad" };
+  if (n === 0) return { txt: "vence hoy", cls: "bad" };
+  if (n <= 7) return { txt: `en ${n} d`, cls: "warn" };
+  return { txt: `en ${n} d`, cls: "" };
+}
+const pbar = (p) => `<div class="pline"><div class="pbar sunken" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div><b>${p}%</b></div>`;
+const badge = (s) => s.estado && s.estado !== "En proceso" ? `<span class="badge ${esc(s.estado)}">${esc(s.estado)}</span>` : "";
+
+/* ---------- Ventana ---------- */
+function win({ title, icon, body, trail, menu }) {
+  const parent = trail && trail.length > 1 ? trail[trail.length - 2] : null;
+  return `<section class="win">
+    <div class="title">${icon || ""}<span class="tt">${esc(title)}</span>
+      <div class="tbtns"><span class="tb off" aria-hidden="true">_</span><span class="tb off" aria-hidden="true">□</span>${parent ? `<button class="tb" data-nav='${nav(parent.v)}' aria-label="Cerrar y volver a ${esc(parent.label)}">×</button>` : `<span class="tb off" aria-hidden="true">×</span>`}</div></div>
+    ${menu ? `<div class="menubar" aria-hidden="true"><span>Archivo</span><span>Edición</span><span>Ver</span><span>Ayuda</span></div>` : ""}
+    ${trail ? `<div class="toolbar">${parent ? `<button class="b98 back" data-nav='${nav(parent.v)}'>◀ Volver</button>` : ""}
+      <div class="addr"><span class="lbl">Dirección</span><div class="addr-f sunken">C:\\${trail.map((it, i) => i < trail.length - 1 ? `<button data-nav='${nav(it.v)}'>${esc(it.label)}</button><span class="sep">\\</span>` : `<span>${esc(it.label)}</span>`).join("")}</div></div></div>` : ""}
+    <div class="wbody">${body}</div></section>`;
+}
+
+function taskRow(t, showTag) {
+  const d = dueOf(t), dl = dueLabel(t), s = t.cancion ? songById(t.cancion) : null, r = relOf(t);
+  const open = openTask === t.id, tag = s ? `${s.nombre} · ${t.area}` : r ? `${r.nombre} · ${t.area}` : "";
+  let h = `<div class="task ${t.estado === "Listo" ? "done" : ""}" data-id="${esc(t.id)}">
+    <div class="row">
+      <button class="b98 st" data-e="${esc(t.estado)}" data-act="cycle" ${canWrite ? "" : "disabled"} aria-label="Estado: ${esc(t.estado)}. Cambiar">${t.estado === "Listo" ? "✓ " : ""}${esc(t.estado)}</button>
+      <div class="main" data-act="toggle" role="button" tabindex="0" aria-expanded="${open}">
+        ${showTag && tag ? `<div class="tag">${esc(tag)}</div>` : ""}
+        <div class="t">${esc(t.tarea)}</div>
+        <div class="s">${esc(t.responsable || "Sin responsable")}${d ? ` · ${fmt.format(d)}` : ""}${t.notas ? ` · ${esc(t.notas)}` : ""}</div>
+      </div>
+      <span class="due ${dl.cls}">${dl.txt}</span>
+    </div>`;
+  if (open) h += `<div class="edit"><fieldset><legend>Propiedades de la tarea</legend>
+      <label class="full">Tarea<input id="e-tarea-${esc(t.id)}" data-f="tarea" value="${esc(t.tarea)}"></label>
+      <label>Responsable<input id="e-resp-${esc(t.id)}" data-f="responsable" value="${esc(t.responsable)}"></label>
+      <label>Estado<select id="e-est-${esc(t.id)}" data-f="estado">${ESTADOS.map(e => `<option ${e === t.estado ? "selected" : ""}>${e}</option>`).join("")}</select></label>
+      <label>Punto clave<select id="e-area-${esc(t.id)}" data-f="area">${AREAS.map(a => `<option ${a === t.area ? "selected" : ""}>${a}</option>`).join("")}</select></label>
+      <label>Días antes del lanzamiento<input id="e-dias-${esc(t.id)}" data-f="diasAntes" type="number" min="0" max="365" value="${esc(t.diasAntes)}"></label>
+      <label class="full">Notas<textarea id="e-notas-${esc(t.id)}" data-f="notas">${esc(t.notas)}</textarea></label>
+      <div class="actions">
+        ${confirmDel === t.id
+          ? `<span class="hint">¿Borrar esta tarea?</span><button class="b98" data-act="nodel">No</button><button class="b98 default" data-act="del">Sí, borrar</button>`
+          : `<button class="b98" data-act="askdel" ${canWrite ? "" : "disabled"}>Borrar tarea</button>`}
+        <button class="b98 default" data-act="toggle">Aceptar</button>
+      </div></fieldset></div>`;
+  return h + `</div>`;
+}
+
+/* ---------- Inicio ---------- */
+function pageHome() {
+  let h = "";
+  const up = rels.filter(r => daysTo(parseD(r.fecha)) >= 0).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const r = up[0];
+  if (r) {
+    const ts = relTasksAll(r), done = ts.filter(t => t.estado === "Listo").length, n = daysTo(parseD(r.fecha)), late = ts.filter(isLate).length;
+    const s = r.tipo !== "disco" ? songs.find(x => x.lanzamiento === r.id) : null;
+    h += win({ title: "Próximo lanzamiento", icon: ico("calendar", 18), body: `
+      <div class="count"><div class="head">${ico("cd", 48)}<div><div class="big">${esc(r.nombre)}</div>
+        <div class="sub">${fmtLong.format(parseD(r.fecha))}${r.confirmada ? "" : " · fecha provisoria"}</div></div></div>
+        <div class="lcd" aria-label="${n} días">${n}<small>${n === 1 ? "DÍA" : "DÍAS"}</small></div></div>
+      ${pbar(pctOf(ts))}
+      <div class="actions" style="justify-content:space-between"><span class="hint">${done} de ${ts.length} tareas listas · ${late ? `${late} atrasada${late > 1 ? "s" : ""}` : "nada atrasado"}</span>
+        <button class="b98 default" data-nav='${nav(s ? { p: "song", id: s.id } : { p: "disco", id: r.id })}'>Abrir</button></div>` });
+  }
+  const u = tasks.filter(t => t.estado !== "Listo" && dueOf(t) && daysTo(dueOf(t)) <= 7).sort((a, b) => dueOf(a) - dueOf(b));
+  h += win({ title: "Para esta semana", icon: ico("calendar", 18), body: `<div class="hint">Atrasadas y las que vencen en los próximos 7 días</div>
+    <div class="list sunken">${gotTasks ? (u.length ? u.map(t => taskRow(t, true)).join("") : `<div class="empty">Nada vence en los próximos 7 días.</div>`) : `<div class="empty">Cargando…</div>`}</div>` });
+
+  const discos = rels.filter(x => x.tipo === "disco").sort((a, b) => a.fecha.localeCompare(b.fecha));
+  h += win({ title: "Mi música", icon: ico("folder", 18), menu: true, body: `
+    <div class="h2">Discos</div>
+    <div class="icons sunken">${discos.map(d => `<button class="ic" data-nav='${nav({ p: "disco", id: d.id })}'>${ico("disc", 56)}<span class="lb">${esc(d.nombre)}</span><span class="pc">${pctOf(relTasksAll(d))}%</span></button>`).join("") || `<div class="empty">Aún no hay discos.</div>`}</div>
+    <div class="actions" style="justify-content:space-between"><div class="h2">Canciones</div>${canWrite ? `<button class="b98" data-nav='${nav({ p: "add" })}'>${ico("plus", 16)}Agregar</button>` : ""}</div>
+    <div class="icons sunken">${gotSongs ? (sortedSongs().map(songIcon).join("") || `<div class="empty">Aún no hay canciones.</div>`) : `<div class="empty">Cargando…</div>`}</div>
+    <div class="hint">${songs.length} objetos · toca una canción para ver sus puntos clave</div>` });
+  return h;
+}
+function songIcon(s) {
+  const p = pctOf(songTasks(s.id));
+  return `<button class="ic" data-nav='${nav({ p: "song", id: s.id })}'>${ico("cd", 52)}<span class="lb">${esc(s.nombre)}</span>${badge(s) || `<span class="pc">${p}%</span>`}</button>`;
+}
+
+/* ---------- Disco ---------- */
+function pageDisco(r) {
+  const own = relOwnTasks(r.id), n = daysTo(parseD(r.fecha));
+  const trail = [{ label: "Mi música", v: { p: "home" } }, { label: r.nombre }];
+  let body = `<div class="head">${ico("disc", 64)}<div><h2 class="big">${esc(r.nombre)}</h2>
+    <div class="sub">${fmtLong.format(parseD(r.fecha))} · ${r.confirmada ? "fecha confirmada" : "fecha provisoria"} · ${n >= 0 ? `faltan ${n} días` : `salió hace ${-n} días`}</div>
+    ${r.notas ? `<div class="hint">${esc(r.notas)}</div>` : ""}</div></div>
+    ${pbar(pctOf(relTasksAll(r)))}
+    <div class="actions"><button class="b98" data-act="editrel" ${canWrite ? "" : "disabled"} aria-pressed="${editingRel}">Propiedades del disco…</button><button class="b98" data-nav='${nav({ p: "ficha", rel: r.id })}'>${ico("notepad", 16)}Datos para la distribuidora (${fichaPct(r).pct}%)</button></div>`;
+  if (editingRel) body += relForm(r);
+  body += `<div class="h2">Canciones</div><div class="icons sunken">${songsOfRel(r).map(songIcon).join("") || `<div class="empty">Sin canciones.</div>`}</div>`;
+  const pts = AREAS.filter(a => own.some(t => t.area === a));
+  if (pts.length) body += `<div class="h2">Puntos del disco completo</div><div class="list sunken">${pts.map(a => pointRow(own.filter(t => t.area === a), a, { p: "relpoint", rel: r.id, area: a })).join("")}</div>`;
+  return win({ title: r.nombre, icon: ico("disc", 18), trail, body });
+}
+
+/* ---------- Canción ---------- */
+function songTrail(s) {
+  const r = relById(s.lanzamiento);
+  return [{ label: "Mi música", v: { p: "home" } }, ...(r && r.tipo === "disco" ? [{ label: r.nombre, v: { p: "disco", id: r.id } }] : []), { label: s.nombre, v: { p: "song", id: s.id } }];
+}
+function pageSong(s) {
+  const ts = songTasks(s.id), r = relById(s.lanzamiento);
+  let body = `<div class="head">${ico("cd", 64)}<div><h2 class="big">${esc(s.nombre)}</h2>
+    <div class="sub">${r ? `${r.tipo === "disco" ? "Sale con el disco" : "Sale"} el ${fmtLong.format(parseD(r.fecha))}` : ""} ${badge(s)}</div>
+    ${s.notas ? `<div class="hint">${esc(s.notas)}</div>` : ""}</div></div>
+    ${pbar(pctOf(ts))}
+    <div class="actions" style="justify-content:flex-start">
+      <label class="hint" for="song-estado">Estado</label>
+      <select id="song-estado" data-songf="estado" style="width:auto" ${canWrite ? "" : "disabled"}>${ESTADOS_CANCION.map(e => `<option ${e === (s.estado || "En proceso") ? "selected" : ""}>${e}</option>`).join("")}</select>
+      ${r && r.tipo !== "disco" ? `<button class="b98" data-act="editrel" ${canWrite ? "" : "disabled"} aria-pressed="${editingRel}">Cambiar fecha…</button><button class="b98" data-nav='${nav({ p: "ficha", rel: r.id })}'>${ico("notepad", 16)}Datos para la distribuidora (${fichaPct(r).pct}%)</button>` : ""}
+      ${s.carpeta ? `<a class="b98" href="${esc(s.carpeta)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">${ico("folder", 16)}Carpeta en Drive</a>` : ""}</div>`;
+  if (editingRel && r && r.tipo !== "disco") body += relForm(r);
+  body += `<div class="h2">Puntos clave</div><div class="list sunken">${AREAS.filter(a => ts.some(t => t.area === a)).map(a => pointRow(ts.filter(t => t.area === a), a, { p: "point", song: s.id, area: a })).join("") || `<div class="empty">Esta canción no tiene puntos.</div>`}</div>`;
+  if (canWrite) body += `<div class="actions">${confirmDel === "song:" + s.id
+    ? `<span class="hint">Se borran la canción y sus ${ts.length} tareas.</span><button class="b98" data-act="nodel">Cancelar</button><button class="b98 default" data-act="delsong">Sí, borrar</button>`
+    : `<button class="b98" data-act="askdelsong">Borrar canción</button>`}</div>`;
+  return win({ title: s.nombre, icon: ico("cd", 18), trail: songTrail(s).map((x, i, a) => i === a.length - 1 ? { label: x.label } : x), body });
+}
+function pointRow(list, area, navv) {
+  const d = list.filter(t => t.estado === "Listo").length, full = d === list.length;
+  const next = list.filter(t => t.estado !== "Listo").sort((x, y) => dueOf(x) - dueOf(y))[0], dl = next ? dueLabel(next) : null;
+  return `<button class="prow ${full ? "full" : ""}" data-nav='${nav(navv)}'>${pIco(area, 34)}
+    <div style="min-width:0"><div class="nm">${esc(area)}</div><div class="sub">${d} de ${list.length} tareas${next ? ` · sigue: ${esc(next.tarea)}` : ""}</div>
+      <div class="mini sunken"><i style="width:${pctOf(list)}%"></i></div></div>
+    ${full ? `<span class="due ok">completo</span>` : `<span class="due ${dl.cls}">${dl.txt}</span>`}<span class="go" aria-hidden="true">▶</span></button>`;
+}
+
+/* ---------- Punto clave → tareas ---------- */
+function pagePoint(list, area, trail, ctx) {
+  const d = list.filter(t => t.estado === "Listo").length;
+  let body = `<div class="head">${pIco(area, 56)}<div><h2 class="big">${esc(area)}</h2><div class="sub">${esc(ctx)} · ${d} de ${list.length} tareas listas</div></div></div>
+    ${pbar(pctOf(list))}
+    <div class="list sunken">${list.sort(byDays).map(t => taskRow(t, false)).join("") || `<div class="empty">Sin tareas.</div>`}</div>`;
+  if (canWrite) body += `<form id="newtask"><fieldset><legend>Agregar tarea a ${esc(area)}</legend>
+    <label class="full">Tarea<input id="nt-tarea" required placeholder="Ej: Revisar referencias con el fotógrafo"></label>
+    <label>Responsable<input id="nt-resp" placeholder="Novi"></label>
+    <label>Días antes del lanzamiento<input id="nt-dias" type="number" min="0" max="365" value="14"></label>
+    <div class="actions"><button class="b98 default" type="submit">Agregar</button></div></fieldset></form>`;
+  return win({ title: `${area} - ${ctx}`, icon: pIco(area, 18), trail, body });
+}
+
+function relForm(r) {
+  return `<form id="relform"><fieldset><legend>Propiedades</legend>
+    <label class="full">Nombre<input id="rf-nombre" value="${esc(r.nombre)}" required></label>
+    <label>Fecha de lanzamiento<input id="rf-fecha" type="date" value="${esc(r.fecha)}" required></label>
+    <label class="check"><input id="rf-conf" type="checkbox" ${r.confirmada ? "checked" : ""}> Fecha confirmada</label>
+    <label class="full">Notas<textarea id="rf-notas">${esc(r.notas)}</textarea></label>
+    <p class="hint full" style="margin:0">Si cambias la fecha, todas las fechas límite se mueven solas.</p>
+    <div class="actions"><button class="b98" type="button" data-act="editrel">Cancelar</button><button class="b98 default" type="submit">Aceptar</button></div>
+  </fieldset></form>`;
+}
+
+function pageAdd() {
+  const d = new Date(today().getTime() + 49 * DIA);
+  const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const discos = rels.filter(r => r.tipo === "disco");
+  return win({ title: "Agregar", icon: ico("plus", 18), trail: [{ label: "Mi música", v: { p: "home" } }, { label: "Agregar" }], body: `<form id="addform"><fieldset><legend>Nuevo</legend>
+    <label class="full">Qué vas a agregar<select id="af-tipo">
+      ${discos.length ? `<option value="track">Canción del disco ${esc(discos[0].nombre)}</option>` : ""}
+      <option value="single">Single (canción con fecha propia)</option>
+      <option value="disco">Disco nuevo</option></select></label>
+    <label class="full">Nombre<input id="af-nombre" required placeholder="Ej: Tema nuevo"></label>
+    <label>Fecha (solo single o disco nuevo)<input id="af-fecha" type="date" value="${iso}"></label>
+    <label class="check"><input id="af-conf" type="checkbox"> Fecha confirmada</label>
+    <label class="check full"><input id="af-mezcla" type="checkbox"> Necesita mezcla y master (si no, ajustada del Crismol)</label>
+    <p class="hint full" style="margin:0">Cada canción se crea con sus puntos clave (mezcla, master, letra, portada, video, subida y promoción) y todas sus tareas.</p>
+    <div class="actions"><button class="b98" type="button" data-nav='${nav({ p: "home" })}'>Cancelar</button><button class="b98 default" type="submit">Aceptar</button></div>
+  </fieldset></form>` });
+}
+
+/* ---------- Ficha para la distribuidora (preguntas del formulario de BAH) ---------- */
+const FORM_URL = "https://forms.gle/8zo7pEvkDzR581Gz6";
+let openFichaSong = null;
+const fichaRel = (r) => r.ficha || {};
+const fichaSong = (s) => s.ficha || {};
+const tipoForm = (r) => fichaRel(r).tipo || (r.tipo === "disco" ? "Album" : "Single");
+function relReq(r) {
+  const f = fichaRel(r);
+  return [["Nombre del lanzamiento", r.nombre], ["Artista principal", f.artista], ["Tipo de lanzamiento", tipoForm(r)], ["Fecha deseada de lanzamiento", fechaCL(r.fecha)], ["Hora deseada de lanzamiento", f.hora], ["Link de la portada", f.portada], ["Género", f.genero], ["Subgénero", f.subgenero]];
+}
+function songReq(s) {
+  const f = fichaSong(s);
+  const q = [["¿Es un remix?", f.remix], ["¿Tiene featuring?", f.feat], ["Productor", f.productor], ["Link del WAV", f.wav], ["Letra", f.letra]];
+  if (f.feat === "si") q.splice(2, 0, ["Nombre del featuring", f.featNombre]);
+  return q;
+}
+const fechaCL = (d) => d ? d.split("-").reverse().join("-") : "";
+const filled = (q) => q.filter(([, v]) => String(v ?? "").trim()).length;
+function fichaPct(r) {
+  const parts = [relReq(r), ...songsOfRel(r).map(songReq)];
+  const tot = parts.reduce((a, q) => a + q.length, 0), ok = parts.reduce((a, q) => a + filled(q), 0);
+  return { ok, tot, pct: tot ? Math.round(ok / tot * 100) : 0 };
+}
+function fichaText(r) {
+  const f = fichaRel(r), L = [];
+  L.push(`Nombre del lanzamiento: ${r.nombre}`, `Artista principal: ${f.artista || ""}`, `Tipo de lanzamiento: ${tipoForm(r)}`,
+    `Fecha deseada de lanzamiento: ${r.fecha}`, `Hora deseada de lanzamiento: ${f.hora || ""}`, `Link de la portada: ${f.portada || ""}`,
+    `Género: ${f.genero || ""}`, `Subgénero: ${f.subgenero || ""}`);
+  songsOfRel(r).forEach((s, i) => {
+    const g = fichaSong(s);
+    L.push("", `${i + 1}. ${s.nombre}`, `¿Es un remix?: ${g.remix || "no"}`, `¿Tiene featuring?: ${g.feat || ""}`);
+    if (g.feat === "si") L.push(`Nombre del featuring: ${g.featNombre || ""}`);
+    L.push(`Productor: ${g.productor || ""}`, `Link del WAV: ${g.wav || ""}`, `Letra:`, g.letra || "");
+  });
+  return L.join("\n");
+}
+const fin = (key, label, val, opt = {}) => `<label class="${opt.full ? "full" : ""}">${label}${opt.req ? " *" : ""}${opt.type === "area"
+  ? `<textarea data-ff="${key}" style="min-height:${opt.h || 120}px" placeholder="${esc(opt.ph || "")}">${esc(val)}</textarea>`
+  : opt.options ? `<select data-ff="${key}"><option value=""${val ? "" : " selected"}>Elegir…</option>${opt.options.map(o => `<option ${o === val ? "selected" : ""}>${o}</option>`).join("")}</select>`
+  : `<input data-ff="${key}" type="${opt.type || "text"}" value="${esc(val)}" placeholder="${esc(opt.ph || "")}">`}</label>`;
+function songFichaFields(s) {
+  const g = fichaSong(s), k = (x) => `song:${s.id}:${x}`;
+  return `<fieldset><legend>${esc(s.nombre)}</legend>
+    ${fin(k("feat"), "¿Tiene featuring?", g.feat, { req: 1, options: ["si", "no"] })}
+    ${fin(k("remix"), "¿Es un remix?", g.remix, { options: ["si", "no"] })}
+    ${g.feat === "si" ? fin(k("featNombre"), "Nombre del featuring", g.featNombre, { req: 1, full: 1 }) : ""}
+    ${fin(k("productor"), "Productor", g.productor, { req: 1, full: 1 })}
+    ${fin(k("wav"), "Link del WAV", g.wav, { req: 1, full: 1, type: "url", ph: "https://drive.google.com/…" })}
+    ${fin(k("letra"), "Letra", g.letra, { req: 1, full: 1, type: "area", h: 160 })}
+    ${s.carpeta ? `<a class="link full" href="${esc(s.carpeta)}" target="_blank" rel="noopener">Abrir la carpeta de ${esc(s.nombre)} en Drive</a>` : ""}
+  </fieldset>`;
+}
+function pageFicha(r) {
+  const f = fichaRel(r), P = fichaPct(r), list = songsOfRel(r), single = r.tipo !== "disco";
+  const s1 = single ? list[0] : null;
+  const trail = s1 ? [...songTrail(s1), { label: "Datos para la distribuidora" }]
+    : [{ label: "Mi música", v: { p: "home" } }, { label: r.nombre, v: { p: "disco", id: r.id } }, { label: "Datos para la distribuidora" }];
+  const k = (x) => `rel:${r.id}:${x}`;
+  let body = `<div class="head">${ico("notepad", 56)}<div><h2 class="big">Datos para la distribuidora</h2>
+    <div class="sub">${esc(r.nombre)} · ${P.ok} de ${P.tot} datos listos</div></div></div>
+    ${pbar(P.pct)}
+    ${P.ok === P.tot ? `<div class="due ok" style="align-self:flex-start">Todo completo: ya puedes generar el PDF</div>` : `<div class="due warn" style="align-self:flex-start">Faltan ${P.tot - P.ok} datos para generar el PDF</div>`}
+    <div class="hint">Son las mismas preguntas del formulario de envío de BAH. Se guarda solo al escribir. * = obligatorio en el formulario. El PDF se habilita cuando están <b>todos</b> los datos.</div>
+    <div class="actions" style="justify-content:flex-start">
+      <button class="b98 default" data-act="pdfficha" ${P.ok === P.tot ? "" : "disabled"}>${ico("notepad", 16)}Generar PDF</button>
+      <button class="b98" data-act="copyficha">Copiar todo</button>
+      <a class="b98" href="${FORM_URL}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">Abrir formulario</a></div>
+    <textarea id="fichacopy" readonly hidden style="min-height:200px"></textarea>
+    <fieldset><legend>Lanzamiento</legend>
+      <label class="full">Nombre del lanzamiento *<input value="${esc(r.nombre)}" data-ff="${k("nombre")}"></label>
+      ${fin(k("artista"), "Artista principal", f.artista, { req: 1, ph: "Novi San" })}
+      ${fin(k("tipo"), "Tipo de lanzamiento", tipoForm(r), { req: 1, options: ["Single", "Ep", "Album"] })}
+      <label>Fecha deseada *<input type="date" value="${esc(r.fecha)}" data-ff="${k("fecha")}"></label>
+      ${fin(k("hora"), "Hora deseada", f.hora, { req: 1, type: "time" })}
+      ${fin(k("portada"), "Link de la portada", f.portada, { req: 1, full: 1, type: "url", ph: "https://drive.google.com/…" })}
+      ${fin(k("genero"), "Género", f.genero, { ph: "Urbano" })}
+      ${fin(k("subgenero"), "Subgénero", f.subgenero, { ph: "Cumbia, R&B, trap…" })}
+    </fieldset>`;
+  if (single && s1) body += songFichaFields(s1);
+  else if (list.length) body += `<div class="h2">Canciones</div><div class="list sunken">${list.map(s => {
+    const q = songReq(s), ok = filled(q), open = openFichaSong === s.id;
+    return `<div><button class="prow ${ok === q.length ? "full" : ""}" data-act="fichasong" data-sid="${esc(s.id)}" aria-expanded="${open}">${ico("cd", 30)}
+      <div style="min-width:0"><div class="nm" style="font-size:17px">${esc(s.nombre)}</div><div class="sub">${ok} de ${q.length} datos</div></div>
+      <span class="due ${ok === q.length ? "ok" : ""}">${ok === q.length ? "completo" : "falta"}</span><span class="go" aria-hidden="true">${open ? "▼" : "▶"}</span></button>
+      ${open ? `<div class="edit">${songFichaFields(s)}</div>` : ""}</div>`;
+  }).join("")}</div>`;
+  return win({ title: `Datos para la distribuidora - ${r.nombre}`, icon: ico("notepad", 18), trail, body });
+}
+let jsPDFp = null;
+function loadJsPDF() {
+  if (window.jspdf) return Promise.resolve(window.jspdf.jsPDF);
+  if (!jsPDFp) jsPDFp = new Promise((ok, bad) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; sc.onload = () => ok(window.jspdf.jsPDF); sc.onerror = () => { jsPDFp = null; bad(new Error("load")); }; document.head.appendChild(sc); });
+  return jsPDFp;
+}
+async function pdfFicha(r) {
+  const P = fichaPct(r); if (P.ok !== P.tot) { toast(`Faltan ${P.tot - P.ok} datos.`); return; }
+  let JsPDF; try { JsPDF = await loadJsPDF(); } catch (e) { toast("No se pudo preparar el PDF. Revisa tu conexión."); return; }
+  const doc = new JsPDF({ unit: "pt", format: "a4" }), W = 595, H = 842, M = 48, TW = W - M * 2;
+  let y = 0;
+  const header = () => { doc.setFillColor(0, 0, 128); doc.rect(0, 0, W, 34, "F"); doc.setTextColor(255); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text(`Datos para la distribuidora - ${r.nombre}`, M, 22); doc.setTextColor(0); y = 64; };
+  const need = (h) => { if (y + h > H - M) { doc.addPage(); header(); } };
+  header();
+  doc.setFont("helvetica", "bold"); doc.setFontSize(24); doc.text(doc.splitTextToSize(r.nombre, TW), M, y + 10); y += 30 + 26 * (doc.splitTextToSize(r.nombre, TW).length - 1);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(90); doc.text(`Formulario de envío BAH · generado el ${fechaCL(new Date().toISOString().slice(0, 10))}`, M, y); doc.setTextColor(0); y += 24;
+  const section = (t) => { need(40); doc.setDrawColor(0); doc.setLineWidth(1.2); doc.line(M, y, W - M, y); y += 18; doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text(t, M, y); y += 18; };
+  const qa = (q, a) => {
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0, 0, 128); need(28); doc.text(q, M, y); y += 14;
+    doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(0);
+    const lines = String(a).split("\n").flatMap(l => doc.splitTextToSize(l || " ", TW));
+    for (const ln of lines) { need(15); doc.text(ln, M, y); y += 15; }
+    y += 8;
+  };
+  section("Lanzamiento");
+  relReq(r).forEach(([q, a]) => qa(q, a));
+  songsOfRel(r).forEach((s, i) => { section(r.tipo === "disco" ? `${i + 1}. ${s.nombre}` : `Canción: ${s.nombre}`); songReq(s).forEach(([q, a]) => qa(q, a)); });
+  const pages = doc.getNumberOfPages();
+  for (let p = 1; p <= pages; p++) { doc.setPage(p); doc.setFontSize(9); doc.setTextColor(120); doc.text(`${p} / ${pages}`, W - M, H - 24, { align: "right" }); }
+  const blob = doc.output("blob"), filename = `Datos distribuidora - ${r.nombre}.pdf`;
+  const dl = await claude.use("downloads").catch(() => null);
+  if (dl) {
+    try { await dl.save({ filename, data: blob }); toast("PDF listo"); }
+    catch (e) { if (e && e.code === "declined") return; if (e && e.code === "rate_limited") { toast("Espera un momento y vuelve a intentarlo."); return; } toast("No se pudo guardar el PDF aquí."); }
+  } else {
+    const file = new File([blob], filename, { type: "application/pdf" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: filename }); } catch (e) {} return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  }
+}
+async function copyFicha(r) {
+  const txt = fichaText(r);
+  try { await navigator.clipboard.writeText(txt); toast("Copiado. Pégalo donde lo necesites."); }
+  catch (e) { const t = $("fichacopy"); t.value = txt; t.hidden = false; t.focus(); t.select(); toast("Selecciona el texto y cópialo."); }
+}
+document.addEventListener("change", (ev) => {
+  const key = ev.target.dataset?.ff; if (!key) return;
+  const [kind, id, field] = key.split(":"); let v = ev.target.value;
+  if (kind === "rel") {
+    const r = relById(id); if (!r) return;
+    if (field === "nombre") { if (!v.trim()) return; save(() => db.doc("lanzamientos/" + id).update({ nombre: v.trim() }), "Guardado"); return; }
+    if (field === "fecha") { if (!v) return; save(() => db.doc("lanzamientos/" + id).update({ fecha: v }), "Fecha cambiada: las fechas límite se movieron"); return; }
+    save(() => db.doc("lanzamientos/" + id).update({ ficha: { ...fichaRel(r), [field]: v } }), "Guardado");
+  } else {
+    const s = songById(id); if (!s) return;
+    save(() => db.doc("canciones/" + id).update({ ficha: { ...fichaSong(s), [field]: v } }), "Guardado");
+  }
+});
+
+
+/* ---------- Respaldo: exportar e importar ---------- */
+async function exportBackup() {
+  const pick = (arr) => arr.map(x => ({ ...x }));
+  const data = JSON.stringify({ app: "lanzamientos-novi-san", version: 1, fecha: new Date().toISOString(), lanzamientos: pick(rels), canciones: pick(songs), tareas: pick(tasks) });
+  const filename = `respaldo-lanzamientos-${new Date().toISOString().slice(0, 10)}.json`;
+  const dl = window.NS_STANDALONE ? null : await claude.use("downloads").catch(() => null);
+  if (dl) {
+    try { await dl.save({ filename, data }); toast("Respaldo guardado"); }
+    catch (e) { if (e && e.code !== "declined") toast("No se pudo guardar el respaldo aquí."); }
+    return;
+  }
+  const blob = new Blob([data], { type: "application/json" }), file = new File([blob], filename, { type: "application/json" });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: filename }); } catch (e) {} return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+}
+function importBackup() {
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = async () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    let j; try { j = JSON.parse(await f.text()); } catch (e) { toast("Ese archivo no es un respaldo válido."); return; }
+    if (j.app !== "lanzamientos-novi-san") { toast("Ese archivo no es un respaldo de esta app."); return; }
+    let n = 0;
+    for (const c of ["lanzamientos", "canciones", "tareas"]) for (const d of (j[c] || [])) { const { id, ...x } = d; if (!id) continue; await db.doc(c + "/" + id).set(x); n++; }
+    toast(`Importados ${n} elementos`);
+  };
+  inp.click();
+}
+
+/* ---------- Render y barra de tareas ---------- */
+function currentTitle() {
+  const v = view;
+  if (v.p === "disco") return relById(v.id)?.nombre || "Mi música";
+  if (v.p === "song") return songById(v.id)?.nombre || "Mi música";
+  if (v.p === "point" || v.p === "relpoint") return v.area;
+  if (v.p === "add") return "Agregar";
+  if (v.p === "ficha") return "Datos para la distribuidora";
+  return "Mi música";
+}
+function render() {
+  let h = "";
+  const v = view;
+  if (v.p === "disco" && relById(v.id)) h = pageDisco(relById(v.id));
+  else if (v.p === "song" && songById(v.id)) h = pageSong(songById(v.id));
+  else if (v.p === "point" && songById(v.song)) {
+    const s = songById(v.song);
+    h = pagePoint(songTasks(s.id).filter(t => t.area === v.area), v.area, [...songTrail(s), { label: v.area }], s.nombre);
+  } else if (v.p === "relpoint" && relById(v.rel)) {
+    const r = relById(v.rel);
+    h = pagePoint(relOwnTasks(r.id).filter(t => t.area === v.area), v.area, [{ label: "Mi música", v: { p: "home" } }, { label: r.nombre, v: { p: "disco", id: r.id } }, { label: v.area }], r.nombre);
+  } else if (v.p === "add") h = pageAdd();
+  else if (v.p === "ficha" && relById(v.rel)) h = pageFicha(relById(v.rel));
+  else { view = { p: "home" }; h = pageHome(); }
+  $("app").innerHTML = h;
+  $("ttab").innerHTML = `${ico(view.p === "home" ? "folder" : view.p === "disco" ? "disc" : view.p === "song" ? "cd" : view.p === "add" ? "plus" : view.p === "ficha" ? "notepad" : (POINT_ICON[view.area] || ["folder"])[0], 16)}<span>${esc(currentTitle())}</span>`;
+  renderMenu();
+}
+function renderMenu() {
+  const m = $("smenu"); m.hidden = !menuOpen; $("startbtn").setAttribute("aria-expanded", String(menuOpen)); $("startbtn").setAttribute("aria-pressed", String(menuOpen));
+  if (!menuOpen) return;
+  const discos = rels.filter(x => x.tipo === "disco");
+  const next = rels.filter(r => daysTo(parseD(r.fecha)) >= 0).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
+  const nextSong = next && next.tipo !== "disco" ? songs.find(x => x.lanzamiento === next.id) : null;
+  m.innerHTML = `<div class="sbanner" aria-hidden="true">Novi<span> San</span></div><div class="sitems">
+    <button class="sitem" role="menuitem" data-nav='${nav({ p: "home" })}'>${ico("folder", 24)}<span>Mi música</span></button>
+    ${discos.map(d => `<button class="sitem" role="menuitem" data-nav='${nav({ p: "disco", id: d.id })}'>${ico("disc", 24)}<span>${esc(d.nombre)}</span></button>`).join("")}
+    ${nextSong ? `<button class="sitem" role="menuitem" data-nav='${nav({ p: "song", id: nextSong.id })}'>${ico("cd", 24)}<span>${esc(nextSong.nombre)}</span></button>` : ""}
+    <div class="ssep"></div>
+    ${canWrite ? `<button class="sitem" role="menuitem" data-nav='${nav({ p: "add" })}'>${ico("plus", 24)}<span>Agregar canción o disco…</span></button>` : ""}
+    <button class="sitem" role="menuitem" data-act="export">${ico("upload", 24)}<span>Exportar respaldo</span></button>
+    ${window.NS_STANDALONE && canWrite ? `<button class="sitem" role="menuitem" data-act="import">${ico("folder", 24)}<span>Importar respaldo…</span></button>` : ""}
+    <button class="sitem" role="menuitem" data-act="start">${ico("note", 24)}<span>Cerrar menú</span></button></div>`;
+}
+function tick() {
+  const n = new Date();
+  $("tray").innerHTML = `<span class="date">${new Intl.DateTimeFormat("es-CL", { day: "numeric", month: "short" }).format(n)}&nbsp;</span>${String(n.getHours()).padStart(2, "0")}:${String(n.getMinutes()).padStart(2, "0")}`;
+}
+function go(v) { view = v; openTask = null; editingRel = false; confirmDel = null; menuOpen = false; render(); window.scrollTo({ top: 0, behavior: "auto" }); }
+
+async function save(fn, okMsg) {
+  if (!db) { toast("No se puede guardar en esta vista."); return; }
+  try { await fn(); if (okMsg) toast(okMsg); }
+  catch (e) {
+    if (e && e.code === "invalid_argument") { canWrite = false; render(); toast("No tienes permiso para editar este tablero."); }
+    else toast("No se guardó. Intenta de nuevo.");
+  }
+}
+
+document.addEventListener("click", (ev) => {
+  const el = ev.target.closest("[data-act],[data-nav]");
+  if (!el) { if (menuOpen && !ev.target.closest("#smenu")) { menuOpen = false; renderMenu(); } return; }
+  if (el.dataset.nav) { try { go(JSON.parse(el.dataset.nav)); } catch (e) {} return; }
+  const id = el.closest(".task")?.dataset.id, act = el.dataset.act;
+  if (act === "export") { menuOpen = false; renderMenu(); exportBackup(); return; }
+  if (act === "import") { menuOpen = false; renderMenu(); importBackup(); return; }
+  if (act === "start") { menuOpen = !menuOpen; renderMenu(); if (menuOpen) $("smenu").querySelector(".sitem")?.focus(); return; }
+  if (menuOpen) { menuOpen = false; renderMenu(); }
+  if (act === "toggle") { openTask = openTask === id ? null : id; confirmDel = null; render(); return; }
+  if (act === "cycle") {
+    const t = tasks.find(x => x.id === id); if (!t) return;
+    const nx = t.estado === "Pendiente" ? "En proceso" : t.estado === "En proceso" ? "Listo" : "Pendiente";
+    save(() => db.doc("tareas/" + id).update({ estado: nx })); return;
+  }
+  if (act === "askdel") { confirmDel = id; render(); return; }
+  if (act === "nodel") { confirmDel = null; render(); return; }
+  if (act === "del") { confirmDel = null; openTask = null; save(() => db.doc("tareas/" + id).delete(), "Tarea borrada"); return; }
+  if (act === "pdfficha") { const r = relById(view.rel); if (r) pdfFicha(r); return; }
+  if (act === "copyficha") { const r = relById(view.rel); if (r) copyFicha(r); return; }
+  if (act === "fichasong") { openFichaSong = openFichaSong === el.dataset.sid ? null : el.dataset.sid; render(); return; }
+  if (act === "editrel") { editingRel = !editingRel; render(); return; }
+  if (act === "askdelsong") { confirmDel = "song:" + view.id; render(); return; }
+  if (act === "delsong") {
+    const sid = view.id; go({ p: "home" });
+    save(async () => { for (const t of songTasks(sid)) await db.doc("tareas/" + t.id).delete(); await db.doc("canciones/" + sid).delete(); }, "Canción borrada");
+  }
+});
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape" && menuOpen) { menuOpen = false; renderMenu(); $("startbtn").focus(); return; }
+  if ((ev.key === "Enter" || ev.key === " ") && ev.target.matches?.('[role="button"]')) { ev.preventDefault(); ev.target.click(); }
+});
+document.addEventListener("change", (ev) => {
+  if (ev.target.dataset?.songf && view.p === "song") {
+    const sid = view.id, v = ev.target.value;
+    save(() => db.doc("canciones/" + sid).update({ estado: v }), v === "En proceso" ? "Guardado" : `Marcada como ${v.toLowerCase()}`); return;
+  }
+  const f = ev.target.dataset?.f; if (!f) return;
+  const id = ev.target.closest(".task")?.dataset.id; if (!id) return;
+  let v = ev.target.value;
+  if (f === "diasAntes") v = Math.max(0, Math.min(365, parseInt(v, 10) || 0));
+  if (f === "tarea" && !v.trim()) return;
+  save(() => db.doc("tareas/" + id).update({ [f]: v }), "Guardado");
+});
+
+async function crearCancion(nombre, lanzamiento, { mezcla, single }) {
+  let sid = slug(nombre); if (songById(sid)) sid += "-" + Date.now().toString(36).slice(-4);
+  const orden = Math.max(0, ...songs.map(s => s.orden || 0)) + 1;
+  await db.doc("canciones/" + sid).set({ nombre, orden, lanzamiento, estado: "En proceso", carpeta: "", notas: "" });
+  for (const [area, tarea, responsable, diasAntes] of plantillaCancion({ mezcla, single }))
+    await db.doc("tareas/" + sid + "--" + slug(area + "-" + tarea)).set({ lanzamiento, cancion: sid, area, tarea, responsable, estado: "Pendiente", diasAntes, notas: "" });
+  return sid;
+}
+
+document.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  const form = ev.target;
+  if (form.id === "newtask") {
+    const tarea = $("nt-tarea").value.trim(); if (!tarea) return;
+    let doc;
+    if (view.p === "point") { const s = songById(view.song); doc = { lanzamiento: s.lanzamiento, cancion: s.id, area: view.area }; }
+    else doc = { lanzamiento: view.rel, cancion: "", area: view.area };
+    Object.assign(doc, { tarea, responsable: $("nt-resp").value.trim() || "Por definir", estado: "Pendiente", diasAntes: Math.max(0, parseInt($("nt-dias").value, 10) || 0), notas: "" });
+    save(() => db.collection("tareas").add(doc), "Tarea agregada");
+  }
+  if (form.id === "relform") {
+    const r = view.p === "disco" ? relById(view.id) : relById(songById(view.id)?.lanzamiento); if (!r) return;
+    const upd = { nombre: $("rf-nombre").value.trim() || r.nombre, fecha: $("rf-fecha").value || r.fecha, confirmada: $("rf-conf").checked, notas: $("rf-notas").value };
+    editingRel = false;
+    save(() => db.doc("lanzamientos/" + r.id).update(upd), "Guardado");
+  }
+  if (form.id === "addform") {
+    const nombre = $("af-nombre").value.trim(), fecha = $("af-fecha").value, tipo = $("af-tipo").value;
+    if (!nombre || (tipo !== "track" && !fecha)) return;
+    const mezcla = $("af-mezcla").checked, conf = $("af-conf").checked;
+    if (tipo === "track") {
+      const disco = rels.find(r => r.tipo === "disco");
+      save(async () => { const sid = await crearCancion(nombre, disco.id, { mezcla, single: false }); go({ p: "song", id: sid }); }, `${nombre} agregada al disco`);
+      return;
+    }
+    let rid = slug(nombre); if (relById(rid)) rid += "-" + Date.now().toString(36).slice(-4);
+    save(async () => {
+      await db.doc("lanzamientos/" + rid).set({ nombre, fecha, confirmada: conf, tipo: tipo === "disco" ? "disco" : "single", notas: "" });
+      if (tipo === "disco") {
+        for (const [area, tarea, responsable, diasAntes] of PLANTILLA_DISCO())
+          await db.doc("tareas/" + rid + "--" + slug(area + "-" + tarea)).set({ lanzamiento: rid, cancion: "", area, tarea, responsable, estado: "Pendiente", diasAntes, notas: "" });
+        go({ p: "disco", id: rid });
+      } else { const sid = await crearCancion(nombre, rid, { mezcla, single: true }); go({ p: "song", id: sid }); }
+    }, `${nombre} creado`);
+  }
+});
+
+async function start() {
+  $("starticon").innerHTML = ico("note", 20);
+  tick(); setInterval(tick, 30000);
+  render();
+  db = await claude.use("db");
+  if (!db) { $("status").textContent = "Abre este tablero con tu cuenta para ver y editar los lanzamientos."; return; }
+  try { const user = await claude.use("user"); const w = user ? await user.can("data.write") : null; if (w === false) canWrite = false; } catch (e) {}
+  const timer = setTimeout(() => { $("status").textContent = "Los datos están tardando en llegar…"; }, 10000);
+  const done = () => { if (gotRels && gotTasks && gotSongs) { clearTimeout(timer); $("status").textContent = canWrite ? "" : "Solo lectura"; } };
+  const fail = (what) => { $("status").textContent = `No se pudieron cargar ${what}.`; };
+  db.collection("lanzamientos").onSnapshot(s => { rels = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => r.fecha); if (!s.metadata.fromCache) gotRels = true; done(); render(); }, () => { gotRels = true; fail("los lanzamientos"); render(); });
+  db.collection("tareas").onSnapshot(s => { tasks = s.docs.map(d => ({ id: d.id, ...d.data() })); if (!s.metadata.fromCache) gotTasks = true; done(); render(); }, () => { gotTasks = true; fail("las tareas"); render(); });
+  db.collection("canciones").onSnapshot(s => { songs = s.docs.map(d => ({ id: d.id, ...d.data() })); if (!s.metadata.fromCache) gotSongs = true; done(); render(); }, () => { gotSongs = true; fail("las canciones"); render(); });
+}
+start();
+</script>
+
+</body>
+</html>
